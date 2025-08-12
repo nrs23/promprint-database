@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Emacs
+.dir-locals.el
+README.html
+
+# Database
+db.sqlite3

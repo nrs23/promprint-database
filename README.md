@@ -12,7 +12,28 @@ Promprint will explore rejects of legal deposit in 19th-century UK libraries. Th
 The front end will enable exploration of the data and metadata, allowing us to find gaps in the legal deposit record when referenced to the Stationer's Hall register.
 
 ## Installation
-The project will be installed using [`uv`](https://github.com/astral-sh/uv), and the data will be published in a portable format so that the whole system can be explored by other researchers. Documentation to follow.
+The project is managed using [`uv`](https://github.com/astral-sh/uv), and [`docker engine`](https://www.docker.com/).
+
+The data will be published in a portable format so that the whole system can be explored by other researchers. Documentation to follow.
+
+Instructions to install `uv` can be found [here](https://docs.astral.sh/uv/getting-started/installation/).
+
+Instructions to install `docker-engine` can be found [here](https://docs.docker.com/engine/install/)
+
+Once the repo has been cloned, and the database has been copied over (details to follow), the project can be run for development using:
+
+```
+uv run python manage.py migrate
+uv run python manage.py runserver
+```
+
+or it can be run for deployment using:
+
+```
+docker compose up --build
+```
+
+Both will deploy a local server which you can access at `127.0.0.1:8000`
 
 ## Tasks
 - [ ] Create the basic table structure for the Stationer's Hall data, allowing us to start populating that table via both manual and automated transcription of the digitised copies of the registers.

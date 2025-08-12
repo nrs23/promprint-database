@@ -1,0 +1,7 @@
+# promprint/docker-compose.yml
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
