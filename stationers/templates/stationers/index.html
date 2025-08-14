@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en-UK">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Promprint Index</title>
+</head>
+
+<body>
+
+    {% if register_list %}
+    <ul>
+        {% for register in register_list %}
+        <li><a href="{% url 'stationers:detail' register.id %}">{{ register.register_name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No registers are available.</p>
+    {% endif %}
+
+</body>
+
+</html>
