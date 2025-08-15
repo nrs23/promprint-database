@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Register Details</title>
+    <title>Entry list for {{ register.register_name }}</title>
 </head>
 
 <body>
@@ -15,7 +15,9 @@
     <h1>Entries:</h1>
     <p>
     <ul>
-        <li>Total entries: <a href="{% url 'stationers:entry_list' register.id %}"> {{ entries }}</a></li>
+        {% for entry in entries %}
+        <li> {{ entry }}</li>
+        {% endfor %}
     </ul>
     </p>
 </body>
