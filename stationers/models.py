@@ -45,3 +45,24 @@ class LibraryEntry(models.Model):
 
     def __str__(self):
         return f"{self.entry_author}: {self.entry_title}"
+
+
+class Matches(models.Model):
+
+    class MatchType(models.TextChoices):
+        EXACT = "EXC", _("Exact match")
+        PARTIAL = "PAR", _("Partial match")
+        FUZZY = "FUZ", _("Fuzzy match")
+        NONE = "NON", _("No match")
+
+    match_type = models.CharField(max_length=3,
+                                  choices=MatchType,
+                                  default=MatchType.NONE)
+    confirmed = models.BooleanField(default=False)
+    register_entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    library_entry = models.ForeignKey(LibraryEntry,
+                                      on_delete=models.CASCADE,
+                                      null=True)
+
+    def __str__(self):
+        return f"{self.register_entry.entry_author}: {self.register_entry.entry_title}"
