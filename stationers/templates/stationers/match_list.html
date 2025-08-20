@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en-UK">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Match list for {{ register.register_name }}</title>
+</head>
+<style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 10px
+    }
+    td {
+        text-align: center;
+    }
+</style>
+
+<body>
+
+    <h1>{{ register.register_name }}</h1>
+    <p>{{ register.register_start_date }} - {{ register.register_end_date }}</p>
+    <p>{{ register.register_pages }} pages</p>
+    <p>{{ register.register_file }}</p>
+    <h1>Register Matches:</h1>
+    <p>
+    <table>
+        <tr>
+            <th> Entry </th>
+            <th> Match Type </th>
+            <th> Confirmed </th>
+        </tr>
+        {% for entry in matches %}
+        <tr>
+            <td>{{ entry }}</td>
+            <td>{{ entry.match_type }}</td>
+            <td>{{ entry.confirmed }}</td>
+        </tr>
+        {% endfor %}
+        </p>
+</body>
+
+</html>

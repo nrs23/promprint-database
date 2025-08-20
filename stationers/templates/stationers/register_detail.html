@@ -17,6 +17,7 @@
     <ul>
         <li>Total entries: <a href="{% url 'stationers:entry_list' register.id %}"> {{ n_entries }}</a></li>
         <li>Associated library entries: <a href="{% url 'stationers:library_entry_list' register.id %}"> {{ n_library_entries }}</a></li>
+        <li>Total matches: <a href="{% url 'stationers:match_list' register.id %}"> {{ n_matches }}</a></li>
     </ul>
     </p>
 </body>
