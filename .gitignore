@@ -15,3 +15,7 @@ README.html
 
 # Database
 db.sqlite3
+db.json
+
+# Django
+*/migrations/
