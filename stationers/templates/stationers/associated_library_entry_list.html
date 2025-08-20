@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en-UK">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Associated library entry list for {{ register.register_name }}</title>
+</head>
+
+<body>
+
+    <h1>{{ register.register_name }}</h1>
+    <p>{{ register.register_start_date }} - {{ register.register_end_date }}</p>
+    <p>{{ register.register_pages }} pages</p>
+    <p>{{ register.register_file }}</p>
+    <h1>Associated Library Entries:</h1>
+    <p>
+    <ul>
+        {% for entry in library_entries %}
+        <li> {{ entry }}</li>
+        {% endfor %}
+    </ul>
+    </p>
+</body>
+
+</html>

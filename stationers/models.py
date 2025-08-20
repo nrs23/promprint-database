@@ -27,6 +27,7 @@ class Entry(models.Model):
 
 
 class LibraryEntry(models.Model):
+
     class Library(models.TextChoices):
         BODLEIAN_LIBRARY = "BOL", _("Bodleian Library")
         BRITISH_LIBRARY = "BRL", _("British Library")
@@ -37,6 +38,7 @@ class LibraryEntry(models.Model):
     source_library = models.CharField(max_length=3,
                                       choices=Library,
                                       default=Library.BRITISH_LIBRARY)
+    register = models.ManyToManyField(Register)
     entry_date = models.DateField("date of entry")
     entry_author = models.CharField(max_length=100)
     entry_title = models.CharField(max_length=500)
@@ -65,4 +67,5 @@ class Matches(models.Model):
                                       null=True)
 
     def __str__(self):
-        return f"{self.register_entry.entry_author}: {self.register_entry.entry_title}"
+        return (f"{self.register_entry.entry_author}: "
+                f"{self.register_entry.entry_title}")
