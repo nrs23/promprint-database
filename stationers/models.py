@@ -85,4 +85,5 @@ class Matches(models.Model):
                                       null=True)
 
     def __str__(self):
-        return (f"{self.register_entry} | {self.library_entry}")
+        return (f"{self.register_entry} | {self.library_entry} |"
+                f"{self.library_entry.source_library}")

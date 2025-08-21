@@ -34,6 +34,7 @@
         <tr>
             <th> Register Entry </th>
             <th> Library Entry </th>
+            <th> Source Library </th>
             <th> Match Type </th>
             <th> Confirmed </th>
         </tr>
@@ -41,7 +42,8 @@
         <tr>
             <td>{{ entry.register_entry }}</td>
             <td>{{ entry.library_entry }}</td>
-            <td>{{ entry.get_match_type_display }}</td>
+            <td>{{ entry.library_entry.get_source_library_display }}</td>
+            <td>{{entry.get_match_type_display }}</td>
             <td>{{ entry.register_entry.confirmed_match }}</td>
         </tr>
         {% endfor %}
