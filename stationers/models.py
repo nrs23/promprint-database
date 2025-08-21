@@ -21,6 +21,7 @@ class Entry(models.Model):
     entry_volumes = models.CharField(max_length=100, blank=True)
     entry_edition = models.CharField(max_length=100, blank=True)
     register_page = models.IntegerField(default=0)
+    confirmed_match = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.entry_author}: {self.entry_title}"
@@ -60,7 +61,6 @@ class Matches(models.Model):
     match_type = models.CharField(max_length=3,
                                   choices=MatchType,
                                   default=MatchType.NONE)
-    confirmed = models.BooleanField(default=False)
     register_entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.CASCADE,
