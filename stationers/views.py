@@ -14,7 +14,10 @@ class IndexView(generic.ListView):
 
 def register_detail(request, register_id):
     register = get_object_or_404(Register, pk=register_id)
-    n_register_entries = len(Entry.objects.filter(register=register_id))
+    register_entries = Entry.objects.filter(register=register_id)
+    for entry in register_entries:
+        entry.match_entry()
+    n_register_entries = len(register_entries)
     n_library_entries = len(LibraryEntry.objects.filter(register=register_id))
     n_matches = len(
         Matches.objects.filter(register_entry__register=register_id))

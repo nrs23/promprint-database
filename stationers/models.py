@@ -23,6 +23,16 @@ class Entry(models.Model):
     register_page = models.IntegerField(default=0)
     confirmed_match = models.BooleanField(default=False)
 
+    def match_entry(self):
+        associated_library_entries = LibraryEntry.objects.filter(
+            register=self.register.id)
+        matched_titles = associated_library_entries.filter(
+            entry_title=self.entry_title)
+        for matched_entry in matched_titles:
+            _, _ = Matches.objects.get_or_create(match_type="EXC",
+                                                 register_entry=self,
+                                                 library_entry=matched_entry)
+
     def __str__(self):
         return f"{self.entry_author}: {self.entry_title}"
 
