@@ -32,15 +32,17 @@
     <p>
     <table>
         <tr>
-            <th> Entry </th>
+            <th> Register Entry </th>
+            <th> Library Entry </th>
             <th> Match Type </th>
             <th> Confirmed </th>
         </tr>
         {% for entry in matches %}
         <tr>
-            <td>{{ entry }}</td>
-            <td>{{ entry.match_type }}</td>
-            <td>{{ entry.confirmed }}</td>
+            <td>{{ entry.register_entry }}</td>
+            <td>{{ entry.library_entry }}</td>
+            <td>{{ entry.get_match_type_display }}</td>
+            <td>{{ entry.register_entry.confirmed_match }}</td>
         </tr>
         {% endfor %}
         </p>
