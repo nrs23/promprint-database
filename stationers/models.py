@@ -27,9 +27,17 @@ class Entry(models.Model):
         associated_library_entries = LibraryEntry.objects.filter(
             register=self.register.id)
         matched_titles = associated_library_entries.filter(
-            entry_title=self.entry_title)
-        for matched_entry in matched_titles:
+            entry_title__iexact=self.entry_title)
+        matched_author_and_titles = matched_titles.filter(
+            entry_author__iexact=self.entry_author)
+        for matched_entry in matched_author_and_titles:
             _, _ = Matches.objects.get_or_create(match_type="EXC",
+                                                 register_entry=self,
+                                                 library_entry=matched_entry)
+        matched_only_titles = matched_titles.exclude(
+            entry_author__iexact=self.entry_author)
+        for matched_entry in matched_only_titles:
+            _, _ = Matches.objects.get_or_create(match_type="PAR",
                                                  register_entry=self,
                                                  library_entry=matched_entry)
 
@@ -77,5 +85,4 @@ class Matches(models.Model):
                                       null=True)
 
     def __str__(self):
-        return (f"{self.register_entry.entry_author}: "
-                f"{self.register_entry.entry_title}")
+        return (f"{self.register_entry} | {self.library_entry}")
