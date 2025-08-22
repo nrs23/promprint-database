@@ -2,6 +2,49 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+def _create_match(entry, matched_entry, is_register_entry, match_type):
+    """
+    Helper function to create a Match object.
+    """
+    if is_register_entry:
+        entries_dict = {
+            'register_entry': entry,
+            'library_entry': matched_entry
+        }
+    else:
+        entries_dict = {
+            'register_entry': matched_entry,
+            'library_entry': entry
+        }
+    Matches.objects.get_or_create(match_type=match_type, **entries_dict)
+
+
+def match_entry(entry, collection_class):
+    """
+    Finds and creates matches for a given entry in a collection.
+    """
+    registers = []
+    is_register_entry = True
+
+    if isinstance(entry, LibraryEntry):
+        registers.extend(entry.register.all())
+        is_register_entry = False
+    elif isinstance(entry, Entry):
+        registers.append(entry.register)
+
+    for register in registers:
+        # Find entries with the same title in the collection
+        matched_titles = collection_class.objects.filter(
+            register=register.id, title__iexact=entry.title)
+
+        for matched_entry in matched_titles:
+            # Check if the author also matches for an exact match
+            if matched_entry.author.lower() == entry.author.lower():
+                _create_match(entry, matched_entry, is_register_entry, "EXC")
+            else:
+                _create_match(entry, matched_entry, is_register_entry, "PAR")
+
+
 class Register(models.Model):
     name = models.CharField(max_length=100)
     start_date = models.DateField("register start date")
@@ -23,23 +66,9 @@ class Entry(models.Model):
     register_page = models.IntegerField(default=0)
     confirmed_match = models.BooleanField(default=False)
 
-    def match_entry(self):
-        associated_library_entries = LibraryEntry.objects.filter(
-            register=self.register.id)
-        matched_titles = associated_library_entries.filter(
-            title__iexact=self.title)
-        matched_author_and_titles = matched_titles.filter(
-            author__iexact=self.author)
-        for matched_entry in matched_author_and_titles:
-            _, _ = Matches.objects.get_or_create(match_type="EXC",
-                                                 register_entry=self,
-                                                 library_entry=matched_entry)
-        matched_only_titles = matched_titles.exclude(
-            author__iexact=self.author)
-        for matched_entry in matched_only_titles:
-            _, _ = Matches.objects.get_or_create(match_type="PAR",
-                                                 register_entry=self,
-                                                 library_entry=matched_entry)
+    def save(self, *args, **kwargs):
+        super(Entry, self).save(*args, **kwargs)
+        match_entry(self, LibraryEntry)
 
     def __str__(self):
         return f"{self.author}: {self.title}"
@@ -63,6 +92,10 @@ class LibraryEntry(models.Model):
     title = models.CharField(max_length=500)
     volumes = models.CharField(max_length=100, blank=True)
     edition = models.CharField(max_length=100, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(LibraryEntry, self).save(*args, **kwargs)
+        match_entry(self, Entry)
 
     def __str__(self):
         return f"{self.author}: {self.title}"
