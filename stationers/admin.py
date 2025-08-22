@@ -1,23 +1,23 @@
 from django.contrib import admin
-from .models import Register, Entry, LibraryEntry, Matches
+from .models import Register, RegisterEntry, LibraryEntry, MatchCandidate
 
 
-class EntryInline(admin.TabularInline):
-    model = Entry
+class RegisterEntryInline(admin.TabularInline):
+    model = RegisterEntry
     extra = 1
 
 
 class MatchInline(admin.TabularInline):
-    model = Matches
+    model = MatchCandidate
     extra = 1
 
 
 class RegisterAdmin(admin.ModelAdmin):
-    inlines = [EntryInline]
+    inlines = [RegisterEntryInline]
     list_display = ["name", "pages", "file"]
 
 
-class EntryAdmin(admin.ModelAdmin):
+class RegisterEntryAdmin(admin.ModelAdmin):
     inlines = [MatchInline]
     list_display = ["title", "author", "date", "register"]
     list_filter = ["register", "confirmed_match"]
@@ -47,6 +47,6 @@ class MatchAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Register, RegisterAdmin)
-admin.site.register(Entry, EntryAdmin)
+admin.site.register(RegisterEntry, RegisterEntryAdmin)
 admin.site.register(LibraryEntry, LibraryEntryAdmin)
-admin.site.register(Matches, MatchAdmin)
+admin.site.register(MatchCandidate, MatchAdmin)

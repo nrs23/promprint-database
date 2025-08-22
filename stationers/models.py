@@ -16,7 +16,7 @@ def _create_match(entry, matched_entry, is_register_entry, match_type):
             'register_entry': matched_entry,
             'library_entry': entry
         }
-    Matches.objects.get_or_create(match_type=match_type, **entries_dict)
+    MatchCandidate.objects.get_or_create(match_type=match_type, **entries_dict)
 
 
 def match_entry(entry, collection_class):
@@ -29,7 +29,7 @@ def match_entry(entry, collection_class):
     if isinstance(entry, LibraryEntry):
         registers.extend(entry.register.all())
         is_register_entry = False
-    elif isinstance(entry, Entry):
+    elif isinstance(entry, RegisterEntry):
         registers.append(entry.register)
 
     for register in registers:
@@ -56,7 +56,7 @@ class Register(models.Model):
         return self.name
 
 
-class Entry(models.Model):
+class RegisterEntry(models.Model):
     register = models.ForeignKey(Register, on_delete=models.CASCADE)
     date = models.DateField("date of entry")
     author = models.CharField(max_length=100)
@@ -67,7 +67,7 @@ class Entry(models.Model):
     confirmed_match = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        super(Entry, self).save(*args, **kwargs)
+        super(RegisterEntry, self).save(*args, **kwargs)
         match_entry(self, LibraryEntry)
 
     def __str__(self):
@@ -95,13 +95,13 @@ class LibraryEntry(models.Model):
 
     def save(self, *args, **kwargs):
         super(LibraryEntry, self).save(*args, **kwargs)
-        match_entry(self, Entry)
+        match_entry(self, RegisterEntry)
 
     def __str__(self):
         return f"{self.author}: {self.title}"
 
 
-class Matches(models.Model):
+class MatchCandidate(models.Model):
 
     class MatchType(models.TextChoices):
         EXACT = "EXC", _("Exact match")
@@ -112,7 +112,7 @@ class Matches(models.Model):
     match_type = models.CharField(max_length=3,
                                   choices=MatchType,
                                   default=MatchType.NONE)
-    register_entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    register_entry = models.ForeignKey(RegisterEntry, on_delete=models.CASCADE)
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.CASCADE,
                                       null=True)

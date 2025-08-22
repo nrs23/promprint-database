@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 
-from .models import Register, Entry, LibraryEntry, Matches
+from .models import Register, RegisterEntry, LibraryEntry, MatchCandidate
 
 
 class IndexView(generic.ListView):
@@ -14,13 +14,13 @@ class IndexView(generic.ListView):
 
 def register_detail(request, register_id):
     register = get_object_or_404(Register, pk=register_id)
-    register_entries = Entry.objects.filter(register=register_id)
+    register_entries = RegisterEntry.objects.filter(register=register_id)
     for entry in register_entries:
         entry.match_entry()
     n_register_entries = len(register_entries)
     n_library_entries = len(LibraryEntry.objects.filter(register=register_id))
     n_matches = len(
-        Matches.objects.filter(register_entry__register=register_id))
+        MatchCandidate.objects.filter(register_entry__register=register_id))
     context = {
         "register": register,
         "n_entries": n_register_entries,
@@ -32,7 +32,7 @@ def register_detail(request, register_id):
 
 def entry_list(request, register_id):
     register = get_object_or_404(Register, pk=register_id)
-    register_entries = Entry.objects.filter(register=register_id)
+    register_entries = RegisterEntry.objects.filter(register=register_id)
     context = {"register": register, "entries": register_entries}
     return render(request, "stationers/entry_list.html", context)
 
@@ -47,7 +47,7 @@ def associated_library_entry_list(request, register_id):
 
 def match_list(request, register_id):
     register = get_object_or_404(Register, pk=register_id)
-    register_matches = Matches.objects.filter(
+    register_matches = MatchCandidate.objects.filter(
         register_entry__register=register_id)
     context = {"register": register, "matches": register_matches}
     return render(request, "stationers/match_list.html", context)
