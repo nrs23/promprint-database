@@ -20,7 +20,7 @@ class RegisterAdmin(admin.ModelAdmin):
 class EntryAdmin(admin.ModelAdmin):
     inlines = [MatchInline]
     list_display = ["title", "author", "date", "register"]
-    list_filter = ["register"]
+    list_filter = ["register", "confirmed_match"]
     search_fields = ["title", "author"]
 
 
