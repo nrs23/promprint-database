@@ -11,7 +11,7 @@
     {% if register_list %}
     <ul>
         {% for register in register_list %}
-        <li><a href="{% url 'stationers:detail' register.id %}">{{ register.register_name }}</a></li>
+        <li><a href="{% url 'stationers:detail' register.id %}">{{ register.name }}</a></li>
         {% endfor %}
     </ul>
     {% else %}

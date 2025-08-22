@@ -3,23 +3,23 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Register(models.Model):
-    register_name = models.CharField(max_length=100)
-    register_start_date = models.DateField("register start date")
-    register_end_date = models.DateField("register end date")
-    register_pages = models.IntegerField(default=0)
-    register_file = models.FileField(upload_to="register_pdfs")
+    name = models.CharField(max_length=100)
+    start_date = models.DateField("register start date")
+    end_date = models.DateField("register end date")
+    pages = models.IntegerField(default=0)
+    file = models.FileField(upload_to="register_pdfs")
 
     def __str__(self):
-        return self.register_name
+        return self.name
 
 
 class Entry(models.Model):
     register = models.ForeignKey(Register, on_delete=models.CASCADE)
-    entry_date = models.DateField("date of entry")
-    entry_author = models.CharField(max_length=100)
-    entry_title = models.CharField(max_length=500)
-    entry_volumes = models.CharField(max_length=100, blank=True)
-    entry_edition = models.CharField(max_length=100, blank=True)
+    date = models.DateField("date of entry")
+    author = models.CharField(max_length=100)
+    title = models.CharField(max_length=500)
+    volumes = models.CharField(max_length=100, blank=True)
+    edition = models.CharField(max_length=100, blank=True)
     register_page = models.IntegerField(default=0)
     confirmed_match = models.BooleanField(default=False)
 
@@ -27,22 +27,22 @@ class Entry(models.Model):
         associated_library_entries = LibraryEntry.objects.filter(
             register=self.register.id)
         matched_titles = associated_library_entries.filter(
-            entry_title__iexact=self.entry_title)
+            title__iexact=self.title)
         matched_author_and_titles = matched_titles.filter(
-            entry_author__iexact=self.entry_author)
+            author__iexact=self.author)
         for matched_entry in matched_author_and_titles:
             _, _ = Matches.objects.get_or_create(match_type="EXC",
                                                  register_entry=self,
                                                  library_entry=matched_entry)
         matched_only_titles = matched_titles.exclude(
-            entry_author__iexact=self.entry_author)
+            author__iexact=self.author)
         for matched_entry in matched_only_titles:
             _, _ = Matches.objects.get_or_create(match_type="PAR",
                                                  register_entry=self,
                                                  library_entry=matched_entry)
 
     def __str__(self):
-        return f"{self.entry_author}: {self.entry_title}"
+        return f"{self.author}: {self.title}"
 
 
 class LibraryEntry(models.Model):
@@ -58,14 +58,14 @@ class LibraryEntry(models.Model):
                                       choices=Library,
                                       default=Library.BRITISH_LIBRARY)
     register = models.ManyToManyField(Register)
-    entry_date = models.DateField("date of entry")
-    entry_author = models.CharField(max_length=100)
-    entry_title = models.CharField(max_length=500)
-    entry_volumes = models.CharField(max_length=100, blank=True)
-    entry_edition = models.CharField(max_length=100, blank=True)
+    date = models.DateField("date of entry")
+    author = models.CharField(max_length=100)
+    title = models.CharField(max_length=500)
+    volumes = models.CharField(max_length=100, blank=True)
+    edition = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return f"{self.entry_author}: {self.entry_title}"
+        return f"{self.author}: {self.title}"
 
 
 class Matches(models.Model):

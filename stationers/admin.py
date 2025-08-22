@@ -14,35 +14,35 @@ class MatchInline(admin.TabularInline):
 
 class RegisterAdmin(admin.ModelAdmin):
     inlines = [EntryInline]
-    list_display = ["register_name", "register_pages", "register_file"]
+    list_display = ["name", "pages", "file"]
 
 
 class EntryAdmin(admin.ModelAdmin):
     inlines = [MatchInline]
-    list_display = ["entry_title", "entry_author", "entry_date", "register"]
+    list_display = ["title", "author", "date", "register"]
     list_filter = ["register"]
-    search_fields = ["entry_title", "entry_author"]
+    search_fields = ["title", "author"]
 
 
 class LibraryEntryAdmin(admin.ModelAdmin):
     inlines = [MatchInline]
     list_display = [
-        "entry_title", "entry_author", "entry_date", "source_library"
+        "title", "author", "date", "source_library"
     ]
     list_filter = ["source_library"]
-    search_fields = ["entry_title", "entry_author"]
+    search_fields = ["title", "author"]
 
 
 class MatchAdmin(admin.ModelAdmin):
     list_display = [
-        "register_entry__entry_title", "register_entry__entry_author",
-        "register_entry__register", "library_entry__entry_title",
-        "library_entry__entry_author", "library_entry__source_library"
+        "register_entry__title", "register_entry__author",
+        "register_entry__register", "library_entry__title",
+        "library_entry__author", "library_entry__source_library"
     ]
     list_filter = ["register_entry__register", "library_entry__source_library"]
     search_fields = [
-        "register_entry__entry_title", "register_entry__entry_author",
-        "library_entry__entry_title", "library_entry__entry_author"
+        "register_entry__title", "register_entry__author",
+        "library_entry__title", "library_entry__author"
     ]
 
 

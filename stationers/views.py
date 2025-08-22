@@ -9,7 +9,7 @@ class IndexView(generic.ListView):
     context_object_name = "register_list"
 
     def get_queryset(self):
-        return Register.objects.order_by("-register_start_date")
+        return Register.objects.order_by("-start_date")
 
 
 def register_detail(request, register_id):
