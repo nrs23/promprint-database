@@ -56,24 +56,6 @@ class Register(models.Model):
         return self.name
 
 
-class RegisterEntry(models.Model):
-    register = models.ForeignKey(Register, on_delete=models.CASCADE)
-    date = models.DateField("date of entry")
-    author = models.CharField(max_length=100)
-    title = models.CharField(max_length=500)
-    volumes = models.CharField(max_length=100, blank=True)
-    edition = models.CharField(max_length=100, blank=True)
-    register_page = models.IntegerField(default=0)
-    confirmed_match = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        super(RegisterEntry, self).save(*args, **kwargs)
-        match_entry(self, LibraryEntry)
-
-    def __str__(self):
-        return f"{self.author}: {self.title}"
-
-
 class LibraryEntry(models.Model):
 
     class Library(models.TextChoices):
@@ -101,6 +83,28 @@ class LibraryEntry(models.Model):
         return f"{self.author}: {self.title}"
 
 
+class RegisterEntry(models.Model):
+    register = models.ForeignKey(Register, on_delete=models.CASCADE)
+    date = models.DateField("date of entry")
+    author = models.CharField(max_length=100)
+    title = models.CharField(max_length=500)
+    volumes = models.CharField(max_length=100, blank=True)
+    edition = models.CharField(max_length=100, blank=True)
+    register_page = models.IntegerField(default=0)
+    confirmed_match = models.BooleanField(default=False)
+    library_entry = models.ForeignKey(LibraryEntry,
+                                      on_delete=models.SET_NULL,
+                                      null=True,
+                                      blank=True)
+
+    def save(self, *args, **kwargs):
+        super(RegisterEntry, self).save(*args, **kwargs)
+        match_entry(self, LibraryEntry)
+
+    def __str__(self):
+        return f"{self.author}: {self.title}"
+
+
 class MatchCandidate(models.Model):
 
     class MatchType(models.TextChoices):
@@ -116,6 +120,17 @@ class MatchCandidate(models.Model):
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.CASCADE,
                                       null=True)
+    confirmed_match = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super(MatchCandidate, self).save(*args, **kwargs)
+        if self.confirmed_match and not self.register_entry.confirmed_match:
+            self.register_entry.confirmed_match = True
+            self.register_entry.library_entry = self.library_entry
+        elif not self.confirmed_match and self.register_entry.confirmed_match:
+            self.register_entry.confirmed_match = False
+            self.register_entry.library_entry = None
+        self.register_entry.save()
 
     def __str__(self):
         return (f"{self.register_entry} | {self.library_entry} |"
