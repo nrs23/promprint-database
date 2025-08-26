@@ -135,7 +135,7 @@ class RegisterEntry(models.Model):
     volumes = models.CharField(max_length=100, blank=True)
     edition = models.CharField(max_length=100, blank=True)
     register_page = models.IntegerField(default=0)
-    confirmed_match = models.BooleanField(default=False)
+    human_checked = models.BooleanField(default=False)
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.SET_NULL,
                                       null=True,
@@ -165,17 +165,17 @@ class MatchCandidate(models.Model):
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.CASCADE,
                                       null=True)
-    confirmed_match = models.BooleanField(default=False)
+    human_checked = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         super(MatchCandidate, self).save(*args, **kwargs)
-        if (self.confirmed_match and not self.register_entry.confirmed_match
+        if (self.human_checked and not self.register_entry.human_checked
                 and self.match_type != self.MatchType.NONE):
-            self.register_entry.confirmed_match = True
+            self.register_entry.human_checked = True
             self.register_entry.library_entry = self.library_entry
             self.register_entry.save()
-        elif not self.confirmed_match and self.register_entry.confirmed_match:
-            self.register_entry.confirmed_match = False
+        elif not self.human_checked and self.register_entry.human_checked:
+            self.register_entry.human_checked = False
             self.register_entry.library_entry = None
             self.register_entry.save()
 
