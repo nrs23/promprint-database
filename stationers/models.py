@@ -169,13 +169,15 @@ class MatchCandidate(models.Model):
 
     def save(self, *args, **kwargs):
         super(MatchCandidate, self).save(*args, **kwargs)
-        if self.confirmed_match and not self.register_entry.confirmed_match:
+        if (self.confirmed_match and not self.register_entry.confirmed_match
+                and self.match_type != self.MatchType.NONE):
             self.register_entry.confirmed_match = True
             self.register_entry.library_entry = self.library_entry
+            self.register_entry.save()
         elif not self.confirmed_match and self.register_entry.confirmed_match:
             self.register_entry.confirmed_match = False
             self.register_entry.library_entry = None
-        self.register_entry.save()
+            self.register_entry.save()
 
     def __str__(self):
         return (f"{self.register_entry} | {self.library_entry} |"
