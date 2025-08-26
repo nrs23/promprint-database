@@ -1,5 +1,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+import logging
+
+from thefuzz import fuzz
+
+logger = logging.getLogger(__name__)
 
 
 def _create_match(entry, matched_entry, is_register_entry, match_type):
@@ -33,16 +38,55 @@ def match_entry(entry, collection_class):
         registers.append(entry.register)
 
     for register in registers:
+        relevant_entries = collection_class.objects.filter(
+            register=register.id)
+        scores = [{
+            "id":
+            collection_entry.id,
+            "title_score":
+            fuzz.ratio(entry.title, collection_entry.title),
+            "author_score":
+            fuzz.ratio(entry.author, collection_entry.author)
+        } for collection_entry in relevant_entries]
+
         # Find entries with the same title in the collection
-        matched_titles = collection_class.objects.filter(
-            register=register.id, title__iexact=entry.title)
+        matched_titles = list(filter(lambda s: s["title_score"] == 100,
+                                     scores))
 
         for matched_entry in matched_titles:
             # Check if the author also matches for an exact match
-            if matched_entry.author.lower() == entry.author.lower():
-                _create_match(entry, matched_entry, is_register_entry, "EXC")
+            if matched_entry["author_score"] == 100:
+                _create_match(entry,
+                              relevant_entries.get(pk=matched_entry["id"]),
+                              is_register_entry, "EXC")
             else:
-                _create_match(entry, matched_entry, is_register_entry, "PAR")
+                _create_match(entry,
+                              relevant_entries.get(pk=matched_entry["id"]),
+                              is_register_entry, "PAR")
+
+        # Find entries with similar title
+        unmatched_titles = list(
+            filter(lambda s: s not in matched_titles, scores))
+        match_threshold = 80
+        fuzzy_titles = list(
+            filter(lambda s: s["title_score"] > match_threshold,
+                   unmatched_titles))
+        for matched_entry in fuzzy_titles:
+            # Check if the author also similar
+            if matched_entry["author_score"] > match_threshold:
+                _create_match(entry,
+                              relevant_entries.get(pk=matched_entry["id"]),
+                              is_register_entry, "FUZ")
+            else:
+                _create_match(entry,
+                              relevant_entries.get(pk=matched_entry["id"]),
+                              is_register_entry, "FZP")
+        logger.debug(f"Entry: {entry}")
+        logger.debug(f"Relevant collection entries: {relevant_entries}")
+        logger.debug(f"All scores: {scores}")
+        logger.debug(f"Matched titles: {matched_titles}")
+        logger.debug(f"Unmatched titles: {unmatched_titles}")
+        logger.debug(f"fuzzy titles: {fuzzy_titles}")
 
 
 class Register(models.Model):
@@ -111,6 +155,7 @@ class MatchCandidate(models.Model):
         EXACT = "EXC", _("Exact match")
         PARTIAL = "PAR", _("Partial match")
         FUZZY = "FUZ", _("Fuzzy match")
+        FUZPA = "FZP", _("Fuzzy partial match")
         NONE = "NON", _("No match")
 
     match_type = models.CharField(max_length=3,
