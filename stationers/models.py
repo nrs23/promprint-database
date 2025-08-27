@@ -24,7 +24,7 @@ def _create_match(entry, matched_entry, is_register_entry, match_type):
     MatchCandidate.objects.get_or_create(match_type=match_type, **entries_dict)
 
 
-def match_entry(entry, collection_class):
+def search_for_match(entry, collection_class):
     """
     Finds and creates matches for a given entry in a collection.
     """
@@ -121,13 +121,19 @@ class LibraryEntry(models.Model):
 
     def save(self, *args, **kwargs):
         super(LibraryEntry, self).save(*args, **kwargs)
-        match_entry(self, RegisterEntry)
+        search_for_match(self, RegisterEntry)
 
     def __str__(self):
         return f"{self.author}: {self.title}"
 
 
 class RegisterEntry(models.Model):
+
+    class MatchConfirmed(models.TextChoices):
+        NOT = "NOT", _("Not confirmed")
+        YES = "YES", _("Confirmed")
+        REJECTED = "REJ", _("Rejected")
+
     register = models.ForeignKey(Register, on_delete=models.CASCADE)
     date = models.DateField("date of entry")
     author = models.CharField(max_length=100)
@@ -135,19 +141,21 @@ class RegisterEntry(models.Model):
     volumes = models.CharField(max_length=100, blank=True)
     edition = models.CharField(max_length=100, blank=True)
     register_page = models.IntegerField(default=0)
-    human_checked = models.BooleanField(default=False)
+    match_confirmed = models.CharField(max_length=3,
+                                       choices=MatchConfirmed,
+                                       default=MatchConfirmed.NOT)
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.SET_NULL,
                                       null=True,
                                       blank=True)
 
     def save(self, *args, **kwargs):
-        if not self.human_checked and self.library_entry is not None:
+        if (self.match_confirmed != self.MatchConfirmed.YES):
             self.library_entry = None
-        if self.library_entry is None and self.human_checked:
-            self.human_checked = False
+        if self.library_entry is None:
+            self.match_confirmed = self.MatchConfirmed.NOT
         super(RegisterEntry, self).save(*args, **kwargs)
-        match_entry(self, LibraryEntry)
+        search_for_match(self, LibraryEntry)
 
     def __str__(self):
         return f"{self.author}: {self.title}"
@@ -160,27 +168,32 @@ class MatchCandidate(models.Model):
         PARTIAL = "PAR", _("Partial match")
         FUZZY = "FUZ", _("Fuzzy match")
         FUZPA = "FZP", _("Fuzzy partial match")
-        NONE = "NON", _("No match")
+
+    class MatchConfirmed(models.TextChoices):
+        NOT = "NOT", _("Not confirmed")
+        YES = "YES", _("Confirmed")
+        REJECTED = "REJ", _("Rejected")
 
     match_type = models.CharField(max_length=3,
                                   choices=MatchType,
-                                  default=MatchType.NONE)
+                                  default=MatchType.EXACT)
     register_entry = models.ForeignKey(RegisterEntry, on_delete=models.CASCADE)
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.CASCADE,
                                       null=True)
-    human_checked = models.BooleanField(default=False)
+    match_confirmed = models.CharField(max_length=3,
+                                       choices=MatchConfirmed,
+                                       default=MatchConfirmed.NOT)
 
     def save(self, *args, **kwargs):
         super(MatchCandidate, self).save(*args, **kwargs)
-        if (self.human_checked and not self.register_entry.human_checked
-                and self.match_type != self.MatchType.NONE):
-            self.register_entry.human_checked = True
-            self.register_entry.library_entry = self.library_entry
-            self.register_entry.save()
-        elif not self.human_checked and self.register_entry.human_checked:
-            self.register_entry.human_checked = False
-            self.register_entry.library_entry = None
+        # Reconcile confirmation status with register entry
+        if (self.match_confirmed != self.register_entry.match_confirmed):
+            self.register_entry.match_confirmed = self.match_confirmed
+            if self.match_confirmed == self.MatchConfirmed.YES:
+                self.register_entry.library_entry = self.library_entry
+            else:
+                self.register_entry.library_entry = None
             self.register_entry.save()
 
     def __str__(self):

@@ -26,9 +26,9 @@ class RegisterEntryAdmin(admin.ModelAdmin):
     inlines = [MatchInline]
     list_display = [
         "title", "author", "date", "register", "_match_count",
-        "human_checked",
+        "match_confirmed",
     ]
-    list_filter = ["register", "human_checked"]
+    list_filter = ["register", "match_confirmed"]
     search_fields = ["title", "author"]
 
     def _match_count(self, obj):
@@ -49,11 +49,11 @@ class MatchAdmin(admin.ModelAdmin):
         "match_type", "register_entry__title", "library_entry__title",
         "register_entry__author", "library_entry__author",
         "register_entry__register", "library_entry__source_library",
-        "human_checked"
+        "match_confirmed"
     ]
     list_filter = [
         "register_entry__register", "library_entry__source_library",
-        "human_checked"
+        "match_confirmed"
     ]
     search_fields = [
         "register_entry__title", "register_entry__author",
