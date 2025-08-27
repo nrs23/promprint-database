@@ -2,6 +2,18 @@ from django.contrib import admin
 from .models import Register, RegisterEntry, LibraryEntry, MatchCandidate
 
 
+def redo_match_search(modeladmin, request, queryset):
+    # Saving RegisterEntry objects will trigger the search function
+    for register in queryset:
+        entries = RegisterEntry.objects.filter(register=register.id)
+        for entry in entries:
+            entry.save()
+
+
+redo_match_search.short_description = "Redo match search on each entry" \
+                                      " in selected registers"
+
+
 class RegisterEntryInline(admin.TabularInline):
     model = RegisterEntry
     extra = 1
@@ -15,6 +27,7 @@ class MatchInline(admin.TabularInline):
 class RegisterAdmin(admin.ModelAdmin):
     inlines = [RegisterEntryInline]
     list_display = ["name", "pages", "file", "_entry_count"]
+    actions = [redo_match_search]
 
     def _entry_count(self, obj):
         return obj.registerentry_set.count()
@@ -25,7 +38,11 @@ class RegisterAdmin(admin.ModelAdmin):
 class RegisterEntryAdmin(admin.ModelAdmin):
     inlines = [MatchInline]
     list_display = [
-        "title", "author", "date", "register", "_match_count",
+        "title",
+        "author",
+        "date",
+        "register",
+        "_match_count",
         "match_confirmed",
     ]
     list_filter = ["register", "match_confirmed"]
