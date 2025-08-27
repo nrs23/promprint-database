@@ -142,6 +142,10 @@ class RegisterEntry(models.Model):
                                       blank=True)
 
     def save(self, *args, **kwargs):
+        if not self.human_checked and self.library_entry is not None:
+            self.library_entry = None
+        if self.library_entry is None and self.human_checked:
+            self.human_checked = False
         super(RegisterEntry, self).save(*args, **kwargs)
         match_entry(self, LibraryEntry)
 
