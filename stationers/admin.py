@@ -102,7 +102,7 @@ class MatchAdmin(admin.ModelAdmin):
     ]
     list_filter = [
         "register_entry__register", "library_entry__source_library",
-        "match_confirmed"
+        "match_type", "match_confirmed"
     ]
     search_fields = [
         "register_entry__title", "register_entry__author",
