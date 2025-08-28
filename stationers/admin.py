@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Register, RegisterEntry, LibraryEntry, MatchCandidate, search_for_match
+from .models import (Register, RegisterEntry, LibraryEntry, MatchCandidate,
+                     search_for_match)
 from import_export.admin import ImportExportModelAdmin
 from import_export import fields, resources, widgets
 
