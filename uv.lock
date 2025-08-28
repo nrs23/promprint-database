@@ -12,6 +12,15 @@ wheels = [
 ]
 
 [[package]]
+name = "diff-match-patch"
+version = "20241021"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0e/ad/32e1777dd57d8e85fa31e3a243af66c538245b8d64b7265bec9a61f2ca33/diff_match_patch-20241021.tar.gz", hash = "sha256:beae57a99fa48084532935ee2968b8661db861862ec82c6f21f4acdd6d835073", size = 39962, upload-time = "2024-10-21T19:41:21.094Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f7/bb/2aa9b46a01197398b901e458974c20ed107935c26e44e37ad5b0e5511e44/diff_match_patch-20241021-py3-none-any.whl", hash = "sha256:93cea333fb8b2bc0d181b0de5e16df50dd344ce64828226bda07728818936782", size = 43252, upload-time = "2024-10-21T19:41:19.914Z" },
+]
+
+[[package]]
 name = "django"
 version = "5.2.5"
 source = { registry = "https://pypi.org/simple" }
@@ -23,6 +32,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/62/9b/779f853c3d2d58b9e08346061ff3e331cdec3fe3f53aae509e256412a593/django-5.2.5.tar.gz", hash = "sha256:0745b25681b129a77aae3d4f6549b62d3913d74407831abaa0d9021a03954bae", size = 10859748, upload-time = "2025-08-06T08:26:29.978Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9d/6e/98a1d23648e0085bb5825326af17612ecd8fc76be0ce96ea4dc35e17b926/django-5.2.5-py3-none-any.whl", hash = "sha256:2b2ada0ee8a5ff743a40e2b9820d1f8e24c11bac9ae6469cd548f0057ea6ddcd", size = 8302999, upload-time = "2025-08-06T08:26:23.562Z" },
+]
+
+[[package]]
+name = "django-import-export"
+version = "4.3.9"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "diff-match-patch" },
+    { name = "django" },
+    { name = "tablib" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d0/4c/caaf012e437faa260e7aee97847279e80e088855d2574e08aa9282f47a6d/django_import_export-4.3.9.tar.gz", hash = "sha256:966e01c2cbd6acda710a0a0097cd99b28d4f9883abbfbbf712f34a2e8eea8809", size = 2226734, upload-time = "2025-07-21T19:17:36.519Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/33/20/8502f3985b91befb3e771c258b7e2a3fa916bdb834e960da307ecc359d66/django_import_export-4.3.9-py3-none-any.whl", hash = "sha256:3d83b1c28f30935240ef9d914a1d4845c6fcaf5c7e5454889dda800eb5d374fb", size = 148545, upload-time = "2025-07-21T19:17:35.035Z" },
 ]
 
 [[package]]
@@ -52,6 +75,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "django" },
+    { name = "django-import-export" },
     { name = "gunicorn" },
     { name = "thefuzz" },
 ]
@@ -59,6 +83,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "django", specifier = ">=5.2.5" },
+    { name = "django-import-export", specifier = ">=4.3.9" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "thefuzz", specifier = ">=0.22.1" },
 ]
@@ -93,6 +118,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e5/40/edede8dd6977b0d3da179a342c198ed100dd2aba4be081861ee5911e4da4/sqlparse-0.5.3.tar.gz", hash = "sha256:09f67787f56a0b16ecdbde1bfc7f5d9c3371ca683cfeaa8e6ff60b4807ec9272", size = 84999, upload-time = "2024-12-10T12:05:30.728Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a9/5c/bfd6bd0bf979426d405cc6e71eceb8701b148b16c21d2dc3c261efc61c7b/sqlparse-0.5.3-py3-none-any.whl", hash = "sha256:cf2196ed3418f3ba5de6af7e82c694a9fbdbfecccdfc72e281548517081f16ca", size = 44415, upload-time = "2024-12-10T12:05:27.824Z" },
+]
+
+[[package]]
+name = "tablib"
+version = "3.8.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/09/cc/fe19d9c2ac1088794a51fc72f49b7226f88a0361f924fb3d17a9ec80e657/tablib-3.8.0.tar.gz", hash = "sha256:94d8bcdc65a715a0024a6d5b701a5f31e45bd159269e62c73731de79f048db2b", size = 122247, upload-time = "2025-01-22T15:29:27.276Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5c/95/6542f54ebd90539b12ed6189cb54a6550a28407b1c503c2e55190c29a4c9/tablib-3.8.0-py3-none-any.whl", hash = "sha256:35bdb9d4ec7052232f8803908f9c7a9c3c65807188b70618fa7a7d8ccd560b4d", size = 47935, upload-time = "2025-01-22T15:28:44.499Z" },
 ]
 
 [[package]]

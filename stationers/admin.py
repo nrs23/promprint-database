@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import Register, RegisterEntry, LibraryEntry, MatchCandidate
+from import_export.admin import ImportExportModelAdmin
+from import_export import fields, resources, widgets
 
 
 def redo_match_search(modeladmin, request, queryset):
@@ -26,7 +28,7 @@ class MatchInline(admin.TabularInline):
 
 class RegisterAdmin(admin.ModelAdmin):
     inlines = [RegisterEntryInline]
-    list_display = ["name", "pages", "file", "_entry_count"]
+    list_display = ["id", "name", "pages", "file", "_entry_count"]
     actions = [redo_match_search]
 
     def _entry_count(self, obj):
@@ -35,7 +37,22 @@ class RegisterAdmin(admin.ModelAdmin):
     _entry_count.short_description = "Entry Count"
 
 
-class RegisterEntryAdmin(admin.ModelAdmin):
+class RegisterEntryResource(resources.ModelResource):
+    register = fields.Field(
+        column_name='register',
+        attribute='register',
+        widget=widgets.ForeignKeyWidget(Register, field='name')
+    )
+
+    class Meta:
+        skip_unchanged = True
+        report_skipped = False
+        fields = ('id', 'register', 'date', 'author', 'title')
+        model = RegisterEntry
+
+
+class RegisterEntryAdmin(ImportExportModelAdmin):
+    resource_classes = [RegisterEntryResource]
     inlines = [MatchInline]
     list_display = [
         "title",
@@ -54,7 +71,22 @@ class RegisterEntryAdmin(admin.ModelAdmin):
     _match_count.short_description = "Match Candidate Count"
 
 
-class LibraryEntryAdmin(admin.ModelAdmin):
+class LibraryEntryResource(resources.ModelResource):
+    register = fields.Field(
+        column_name='register',
+        attribute='register',
+        widget=widgets.ManyToManyWidget(Register, field='name', separator='|')
+    )
+
+    class Meta:
+        skip_unchanged = True
+        report_skipped = False
+        fields = ('id', 'source_library', 'register', 'date', 'author', 'title')
+        model = LibraryEntry
+
+
+class LibraryEntryAdmin(ImportExportModelAdmin):
+    resource_classes = [LibraryEntryResource]
     inlines = [MatchInline]
     list_display = ["title", "author", "date", "source_library"]
     list_filter = ["source_library"]
