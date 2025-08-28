@@ -147,7 +147,13 @@ class RegisterEntry(models.Model):
 
     def save(self, *args, **kwargs):
         if (self.match_confirmed != self.MatchConfirmed.YES):
-            self.library_entry = None
+            if self.library_entry is not None:
+                matches = MatchCandidate.objects.filter(
+                    register_entry=self, library_entry=self.library_entry)
+                for match_candidate in matches:
+                    match_candidate.match_confirmed = self.match_confirmed
+                    match_candidate.save()
+                self.library_entry = None
         if self.library_entry is None:
             self.match_confirmed = self.MatchConfirmed.NOT
         super(RegisterEntry, self).save(*args, **kwargs)
