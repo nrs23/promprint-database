@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Register, RegisterEntry, LibraryEntry, MatchCandidate
+from .models import Register, RegisterEntry, LibraryEntry, MatchCandidate, search_for_match
 from import_export.admin import ImportExportModelAdmin
 from import_export import fields, resources, widgets
 
@@ -9,7 +9,7 @@ def redo_match_search(modeladmin, request, queryset):
     for register in queryset:
         entries = RegisterEntry.objects.filter(register=register.id)
         for entry in entries:
-            entry.save()
+            search_for_match(entry, LibraryEntry)
 
 
 redo_match_search.short_description = "Redo match search on each entry" \
@@ -38,11 +38,10 @@ class RegisterAdmin(admin.ModelAdmin):
 
 
 class RegisterEntryResource(resources.ModelResource):
-    register = fields.Field(
-        column_name='register',
-        attribute='register',
-        widget=widgets.ForeignKeyWidget(Register, field='name')
-    )
+    register = fields.Field(column_name='register',
+                            attribute='register',
+                            widget=widgets.ForeignKeyWidget(Register,
+                                                            field='name'))
 
     class Meta:
         skip_unchanged = True
@@ -72,16 +71,17 @@ class RegisterEntryAdmin(ImportExportModelAdmin):
 
 
 class LibraryEntryResource(resources.ModelResource):
-    register = fields.Field(
-        column_name='register',
-        attribute='register',
-        widget=widgets.ManyToManyWidget(Register, field='name', separator='|')
-    )
+    register = fields.Field(column_name='register',
+                            attribute='register',
+                            widget=widgets.ManyToManyWidget(Register,
+                                                            field='name',
+                                                            separator='|'))
 
     class Meta:
         skip_unchanged = True
         report_skipped = False
-        fields = ('id', 'source_library', 'register', 'date', 'author', 'title')
+        fields = ('id', 'source_library', 'register', 'date', 'author',
+                  'title')
         model = LibraryEntry
 
 

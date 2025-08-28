@@ -119,10 +119,6 @@ class LibraryEntry(models.Model):
     volumes = models.CharField(max_length=100, blank=True)
     edition = models.CharField(max_length=100, blank=True)
 
-    def save(self, *args, **kwargs):
-        super(LibraryEntry, self).save(*args, **kwargs)
-        search_for_match(self, RegisterEntry)
-
     def __str__(self):
         return f"{self.author}: {self.title}"
 
@@ -155,7 +151,6 @@ class RegisterEntry(models.Model):
         if self.library_entry is None:
             self.match_confirmed = self.MatchConfirmed.NOT
         super(RegisterEntry, self).save(*args, **kwargs)
-        search_for_match(self, LibraryEntry)
 
     def __str__(self):
         return f"{self.author}: {self.title}"

@@ -1,6 +1,6 @@
 [project]
 name = "promprint-database"
-version = "0.1.0"
+version = "0.2.0"
 description = "A django-based front end for editing and interacting with the promprint database."
 readme = "README.md"
 requires-python = ">=3.13"
