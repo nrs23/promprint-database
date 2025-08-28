@@ -28,7 +28,7 @@ class MatchInline(admin.TabularInline):
 
 class RegisterAdmin(admin.ModelAdmin):
     inlines = [RegisterEntryInline]
-    list_display = ["id", "name", "pages", "file", "_entry_count"]
+    list_display = ["name", "pages", "file", "_entry_count"]
     actions = [redo_match_search]
 
     def _entry_count(self, obj):
