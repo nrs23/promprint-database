@@ -177,7 +177,7 @@ class MatchCandidate(models.Model):
 
     match_type = models.CharField(max_length=3,
                                   choices=MatchType,
-                                  default=MatchType.EXACT)
+                                  null=True)
     register_entry = models.ForeignKey(RegisterEntry, on_delete=models.CASCADE)
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.CASCADE,
