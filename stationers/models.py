@@ -125,11 +125,6 @@ class LibraryEntry(models.Model):
 
 class RegisterEntry(models.Model):
 
-    class MatchConfirmed(models.TextChoices):
-        NOT = "NOT", _("Not confirmed")
-        YES = "YES", _("Confirmed")
-        REJECTED = "REJ", _("Rejected")
-
     register = models.ForeignKey(Register, on_delete=models.CASCADE)
     date = models.DateField("date of entry")
     author = models.CharField(max_length=100)
@@ -137,26 +132,6 @@ class RegisterEntry(models.Model):
     volumes = models.CharField(max_length=100, blank=True)
     edition = models.CharField(max_length=100, blank=True)
     register_page = models.IntegerField(default=0)
-    match_confirmed = models.CharField(max_length=3,
-                                       choices=MatchConfirmed,
-                                       default=MatchConfirmed.NOT)
-    library_entry = models.ForeignKey(LibraryEntry,
-                                      on_delete=models.SET_NULL,
-                                      null=True,
-                                      blank=True)
-
-    def save(self, *args, **kwargs):
-        if (self.match_confirmed != self.MatchConfirmed.YES):
-            if self.library_entry is not None:
-                matches = MatchCandidate.objects.filter(
-                    register_entry=self, library_entry=self.library_entry)
-                for match_candidate in matches:
-                    match_candidate.match_confirmed = self.match_confirmed
-                    match_candidate.save()
-                self.library_entry = None
-        if self.library_entry is None:
-            self.match_confirmed = self.MatchConfirmed.NOT
-        super(RegisterEntry, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.author}: {self.title}"
@@ -185,17 +160,6 @@ class MatchCandidate(models.Model):
     match_confirmed = models.CharField(max_length=3,
                                        choices=MatchConfirmed,
                                        default=MatchConfirmed.NOT)
-
-    def save(self, *args, **kwargs):
-        super(MatchCandidate, self).save(*args, **kwargs)
-        # Reconcile confirmation status with register entry
-        if (self.match_confirmed != self.register_entry.match_confirmed):
-            self.register_entry.match_confirmed = self.match_confirmed
-            if self.match_confirmed == self.MatchConfirmed.YES:
-                self.register_entry.library_entry = self.library_entry
-            else:
-                self.register_entry.library_entry = None
-            self.register_entry.save()
 
     def __str__(self):
         return (f"{self.register_entry} | {self.library_entry} |"

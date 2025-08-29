@@ -55,18 +55,20 @@ class RegisterEntryAdmin(ImportExportModelAdmin):
     resource_classes = [RegisterEntryResource]
     inlines = [MatchInline]
     list_display = [
-        "title",
-        "author",
-        "date",
-        "register",
-        "_match_count",
-        "match_confirmed",
+        "title", "author", "date", "register", "_match_count", "_has_match"
     ]
-    list_filter = ["register", "match_confirmed"]
+    list_filter = ["register", "matchcandidate__match_confirmed"]
     search_fields = ["title", "author"]
 
     def _match_count(self, obj):
         return obj.matchcandidate_set.count()
+
+    @admin.display(boolean=True)
+    def _has_match(self, obj):
+        matched = list(
+            filter(lambda m: m.match_confirmed == m.MatchConfirmed.YES,
+                   obj.matchcandidate_set.all()))
+        return len(matched) > 0
 
     _match_count.short_description = "Match Candidate Count"
 
