@@ -17,18 +17,7 @@ redo_match_search.short_description = "Redo match search on each entry" \
                                       " in selected registers"
 
 
-class RegisterEntryInline(admin.TabularInline):
-    model = RegisterEntry
-    extra = 1
-
-
-class MatchInline(admin.TabularInline):
-    model = MatchCandidate
-    extra = 1
-
-
 class RegisterAdmin(admin.ModelAdmin):
-    inlines = [RegisterEntryInline]
     list_display = ["name", "pages", "file", "_entry_count"]
     actions = [redo_match_search]
 
@@ -36,6 +25,11 @@ class RegisterAdmin(admin.ModelAdmin):
         return obj.registerentry_set.count()
 
     _entry_count.short_description = "Entry Count"
+
+
+class MatchInline(admin.TabularInline):
+    model = MatchCandidate
+    extra = 1
 
 
 class RegisterEntryResource(resources.ModelResource):
