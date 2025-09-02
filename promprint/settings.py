@@ -30,6 +30,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = [os.environ.get('HOSTNAME', ''), '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [f'https://{os.environ.get('HOSTNAME', 'localhost')}']
 
 # Application definition
 
