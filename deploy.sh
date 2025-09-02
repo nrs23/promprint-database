@@ -7,7 +7,7 @@ while getopts ":-:" opt; do
         -)
             case "${OPTARG}" in
                 staging)
-                    uv run gunicorn --bind 127.0.0.1:$PORT promprint.wsgi
+                    docker compose up --build -d
                     ;;
                 develop)
                     uv run python manage.py runserver $PORT

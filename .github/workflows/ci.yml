@@ -1,0 +1,43 @@
+name: deploy to promprint.teletype.network
+run-name: Deploy to promprint.teletype.network by @${{ github.actor }}
+on:
+  push:
+    branches:
+      - develop
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables for staging
+        if: endsWith(github.ref, '/staging')
+        run: |
+          echo "BRANCH=staging" >> $GITHUB_ENV
+      - name: Set environment variables for development
+        if: endsWith(github.ref, '/develop')
+        run: |
+          echo "BRANCH=develop" >> $GITHUB_ENV
+      - name: Deploy Django app
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{secrets.SSH_HOST}} # IP address of the server
+          key: ${{secrets.SSH_KEY}} # Private or public key of the server
+          username: ${{ secrets.SSH_USERNAME }} # User of the server
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            echo 'Deploying from ${{ env.BRANCH }} on promprint.teletype.network...'
+            if ! [ -d "$HOME/promprint-records/" ]; then
+              echo 'repo does not exist!'
+              exit 1
+            fi
+            cd $HOME/promprint-records/
+            git checkout ${{ env.BRANCH }}
+            git pull
+            git reset --hard origin/${{ env.BRANCH }}
+            $HOME/promprint-records/deploy.sh --${{ env.BRANCH }}
+            if [ $? != 0 ]; then
+              echo "deploy.sh --${{ env.BRANCH }} failed, check the server logs!"
+              exit 1
+            fi
+            echo 'Deployment to promprint.teletype.network succesful!'
