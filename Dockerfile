@@ -16,7 +16,7 @@ RUN uv sync --frozen --no-dev
 
 COPY . /app/
 
-EXPOSE 8000
+EXPOSE 8070
 
 # Command for production
-CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8000", "promprint.wsgi:application"]
+CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8070", "promprint.wsgi"]
