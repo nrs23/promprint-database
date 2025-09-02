@@ -30,13 +30,13 @@ uv run python manage.py runserver
 or it can be run for deployment using:
 
 ```
-docker compose up --build
+docker compose up --build -d
 ```
 
-Both will deploy a local server which you can access at `127.0.0.1:8000`
+Both will deploy a local server which you can access at `127.0.0.1:8070`
 
 ## Tasks
-- [ ] Create the basic table structure for the Stationer's Hall data, allowing us to start populating that table via both manual and automated transcription of the digitised copies of the registers.
+- [X] Create the basic table structure for the Stationer's Hall and Library data, allowing us to start populating that table via both manual and automated transcription of the digitised copies of the registers.
+- [X] Explore convenient ways to match data (fuzzy search?) and to build/join new tables that can help research explore themes behind the gaps in the data
 - [ ] Once legal deposit data from the British Library is Received, build out the corresponding table based on their metadata structure
-- [ ] Explore convenient ways to match data (fuzzy search?) and to build/join new tables that can help research explore themes behind the gaps in the data
 
