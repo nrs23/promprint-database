@@ -8,5 +8,6 @@ dependencies = [
     "django>=5.2.5",
     "django-import-export>=4.3.9",
     "gunicorn>=23.0.0",
+    "load-dotenv>=0.1.0",
     "thefuzz>=0.22.1",
 ]

@@ -19,3 +19,5 @@ db.json
 
 # Django
 */migrations/
+.env
+static/
