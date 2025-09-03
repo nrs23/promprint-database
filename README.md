@@ -1,7 +1,7 @@
 # Promprint Database
-A django-based front end for editing and interacting with the [promprint](https://cordis.europa.eu/project/id/101163126) database.
+A django-based admin interface for editing and interacting with the [promprint](https://cordis.europa.eu/project/id/101163126) database.
 
-This is currently a work in progress.
+This is currently a work in progress. Only the administration interface for the database is currently available. The front end will be developed as we work out whether the fundamental database structure is what we need.
 
 Promprint will explore rejects of legal deposit in 19th-century UK libraries. The database enables this by storing and comparing separate tables of data:
 
@@ -39,4 +39,5 @@ Both will deploy a local server which you can access at `127.0.0.1:8070`
 - [X] Create the basic table structure for the Stationer's Hall and Library data, allowing us to start populating that table via both manual and automated transcription of the digitised copies of the registers.
 - [X] Explore convenient ways to match data (fuzzy search?) and to build/join new tables that can help research explore themes behind the gaps in the data
 - [ ] Once legal deposit data from the British Library is Received, build out the corresponding table based on their metadata structure
+- [ ] Convert the project over to use the [django rest framework](https://www.django-rest-framework.org/) to improve interoperability of the front end when it comes
 
