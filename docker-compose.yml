@@ -6,3 +6,4 @@ services:
       - "8070:8070"
     volumes:
       - ./db.sqlite3:/app/db.sqlite3
+    restart: always
